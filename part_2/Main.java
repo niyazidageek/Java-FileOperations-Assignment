@@ -29,13 +29,14 @@ public class Main {
 
     private static void copyFilesRecursion(Path _path, Path... _prevPath) throws IOException {
         if(!Files.exists(_path)) return;
-
+        System.out.println(String.format(">Started: %s",systemPath.relativize(_path)));
         if(Files.isDirectory(_path)){
             File tempDir = Arrays.stream(_prevPath).count()==0
                     ? new File(dest.resolve(_path.getFileName()).toString())
                     : new File(_prevPath[0].resolve(_path.getFileName()).toString());
             tempDir.mkdirs();
             for (var p:Files.list(_path).collect(Collectors.toList())) {
+                System.out.println(String.format(">Started: %s",systemPath.relativize(p)));
                 if(Files.isDirectory(p)){
                     try{
                         File _tempDir = new File(tempDir.toPath().resolve(p.getFileName()).toString());
@@ -47,16 +48,20 @@ public class Main {
                     catch (Exception e){
                         continue;
                     }
+                    System.out.println(String.format(">Finished FOLDER: %s",systemPath.relativize(p)));
                 }
                 else {
                     Files.copy(p, tempDir.toPath().resolve(p.getFileName()));
+                    System.out.println(String.format(">Finished: FILE %s",systemPath.relativize(p)));
                 }
             }
+            System.out.println(String.format(">Finished FOLDER: %s",systemPath.relativize(_path)));
         }
         else{
             Files.copy(_path, Arrays.stream(_prevPath).count()==0
                     ?dest.resolve(_path.getFileName())
                     :_prevPath[0].resolve(_path.getFileName()));
+            System.out.println(String.format(">Finished: FILE %s",systemPath.relativize(_path)));
         }
     }
 }
